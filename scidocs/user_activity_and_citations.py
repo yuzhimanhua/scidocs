@@ -148,14 +148,11 @@ def make_run_from_embeddings(qrel_file, embeddings, run_file, topk=5, generate_r
             except KeyError:
                 key_error += 1
 
-        # calculate similarity based on l2 norm
+        # calculate similarity
         emb_query = np.array(emb_query)
 
-        # trec_eval assumes higher scores are more relevant
-        # here the closer distance means higher relevance; therefore, we multiply distances by -1
-        distances = [-np.linalg.norm(emb_query - np.array(e))
-                     if len(e) > 0 else float("-inf")
-                     for e in emb_candidates]
+        # distances = [-np.linalg.norm(emb_query - np.array(e)) if len(e) > 0 else float("-inf") for e in emb_candidates]
+        distances = [np.dot(emb_query, np.array(e)) if len(e) > 0 else float("-inf") for e in emb_candidates]
 
         distance_with_ids = list(zip(candidate_ids, distances))
 
